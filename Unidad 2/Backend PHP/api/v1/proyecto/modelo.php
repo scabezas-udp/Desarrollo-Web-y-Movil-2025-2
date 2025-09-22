@@ -1,5 +1,16 @@
 <?php
 
+/*
+CREATE TABLE proyecto(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(50) NOT NULL,
+    descripcion VARCHAR(50) NOT NULL,
+    integrantes VARCHAR(500) NOT NULL,
+    url VARCHAR(100) NOT NULL,
+    activo tinyint(1) NOT NULL,
+);
+*/
+
 class Proyecto
 {
     private $id;
