@@ -1,43 +1,32 @@
-DROP TABLE IF EXISTS persona_medios_contacto;
-DROP TABLE IF EXISTS documento_identidad;
-DROP TABLE IF EXISTS persona;
-DROP TABLE IF EXISTS nacionalidad;
-DROP TABLE IF EXISTS genero;
-DROP TABLE IF EXISTS documento_identidad_tipo;
-DROP TABLE IF EXISTS apellido_orden;
-DROP TABLE IF EXISTS medio_contacto;
-
--- entidades debiles
-CREATE TABLE nacionalidad (
+CREATE TABLE apellido_orden (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(50) NOT NULL UNIQUE,
     activo INT(1) NOT NULL DEFAULT 0
 );
-
-CREATE TABLE genero (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(50) NOT NULL UNIQUE,
-    activo INT(1) NOT NULL DEFAULT 0
-);
+INSERT INTO apellido_orden (nombre, activo) VALUES ('Apellido Paterno Primero', 1), ('Apellido Materno Primero', 1);
 
 CREATE TABLE documento_identidad_tipo (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(50) NOT NULL UNIQUE,
     activo INT(1) NOT NULL DEFAULT 0
 );
+INSERT INTO documento_identidad_tipo (nombre, activo) VALUES ('Cédula de Identidad', 1), ('Licencia de Conducir', 1);
 
-CREATE TABLE apellido_orden (
+CREATE TABLE genero (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(50) NOT NULL UNIQUE,
     activo INT(1) NOT NULL DEFAULT 0
 );
+INSERT INTO genero (nombre, activo) VALUES ('Femenino', 1), ('Masculino', 1);
 
-CREATE TABLE medio_contacto (
+CREATE TABLE nacionalidad (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(50) NOT NULL UNIQUE,
     activo INT(1) NOT NULL DEFAULT 0
 );
+INSERT INTO nacionalidad (nombre, activo) VALUES ('Chilena', 1), ('Venezolana', 1), ('Colombiana', 1), ('Peruana', 1), ('Haitiana', 1);
 
+-- PERSONA
 CREATE TABLE persona (
     id INT PRIMARY KEY AUTO_INCREMENT,
     fecha_nacimiento DATE NOT NULL,
@@ -63,56 +52,8 @@ CREATE TABLE documento_identidad (
     FOREIGN KEY (documento_tipo_id) REFERENCES documento_identidad_tipo(id)
 );
 
-CREATE TABLE persona_medios_contacto (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    persona_id INT NOT NULL,
-    medio_contacto_id INT NOT NULL,
-    valor VARCHAR(100) NOT NULL,
-    activo INT(1) NOT NULL DEFAULT 0,
-    FOREIGN KEY (persona_id) REFERENCES persona(id),
-    FOREIGN KEY (medio_contacto_id) REFERENCES medio_contacto(id)
-);
-
--- INSERTS
-
-INSERT INTO nacionalidad (nombre, activo) VALUES ('Chilena', 1), ('Venezolana', 1);
-INSERT INTO genero (nombre, activo) VALUES ('Femenino', 1), ('Masculino', 1);
-INSERT INTO documento_identidad_tipo (nombre, activo) VALUES ('Cédula de Identidad', 1), ('Licencia de Conducir', 1);
-INSERT INTO apellido_orden (nombre, activo) VALUES ('Apellido Paterno Primero', 1), ('Apellido Materno Primero', 1);
-INSERT INTO medio_contacto (nombre, activo) VALUES ('Whatsapp', 1), ('Correo Electrónico', 1);
-
-
 INSERT INTO persona (id, fecha_nacimiento,activo) VALUES (1, '1987-08-06', 1);
-
-INSERT INTO documento_identidad (valor, persona_id, nombres, apellido_paterno, apellido_materno, orden_apeliido_id, nacionalidad_id, genero_id, documento_tipo_id, activo) 
-VALUES('16.571.375-3', 1, 'Sebastian Alejandro', 'Cabezas', 'Ríos', 1, 1, 2, 1, 1); 
-
-INSERT INTO persona_medios_contacto (persona_id, medio_contacto_id, valor, activo) 
-VALUES 
-(1, 1, '+56956185582', 1),
-(1, 2, 'sebastian.cabezas@umayor.cl', 1);
-
--- SELECT
-SELECT 
-	per.id persona_id, 
-    docid.id documento_identidad_id, 
-    docid.valor documento_identidad_valor,
-    docid.nombres documento_identidad_nombres, 
-    docid.apellido_paterno documento_identidad_apellido_paterno, 
-    docid.apellido_materno documento_identidad_apellido_materno, 
-    docid.orden_apeliido_id documento_identidad_orden_apellido_id,
-    apor.nombre documento_identidad_orden_apellido_nombre,
-    docid.nacionalidad_id documento_identidad_nacionalidad_id,
-    naci.nombre documento_identidad_nacionalidad_nombre,
-    docid.genero_id documento_identidad_genero_id,
-    gene.nombre documento_identidad_genero_nombre,
-    docid.documento_tipo_id documento_identidad_tipo_id,
-    docidti.nombre documento_identidad_tipo_nombre
-FROM persona per 
-	INNER JOIN documento_identidad docid ON per.id = docid.persona_id
-    INNER JOIN apellido_orden apor ON docid.orden_apeliido_id = apor.id
-    INNER JOIN nacionalidad naci ON docid.nacionalidad_id = naci.id
-    INNER JOIN genero gene ON docid.genero_id = gene.id
-    INNER JOIN documento_identidad_tipo docidti ON docid.documento_tipo_id = docidti.id;
-
-
+INSERT INTO documento_identidad (valor, persona_id, nombres, apellido_paterno, apellido_materno, orden_apeliido_id, nacionalidad_id, genero_id, documento_tipo_id, activo) VALUES
+('16.571.375-3', 1, 'Sebastian Alejandro', 'Cabezas', 'Ríos', 1, 1, 2, 1, 1),
+('123.123-1', 1, 'Sebastian Alejandro', 'Cabezas', 'Ríos', 1, 1, 2, 2, 1);
+    
