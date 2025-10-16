@@ -180,7 +180,7 @@ CREATE TABLE billetera_historial (
     fecha DATETIME NOT NULL,
     tipo_id INT NOT NULL,
     monto INT(9) NOT NULL,
-    partida_id INT NOT NULL,
+    partida_id INT,
     activo INT(1) NOT NULL DEFAULT 0,
     FOREIGN KEY (billetera_id) REFERENCES billetera (id),
     FOREIGN KEY (tipo_id) REFERENCES bill_hist_reg_tipo (id),
