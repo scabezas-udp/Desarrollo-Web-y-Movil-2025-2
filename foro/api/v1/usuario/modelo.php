@@ -1,13 +1,12 @@
 <?php
 
-class Comentario
+class Usuario
 {
     private $id;
-    private $titulo;
-    private $contenido;
+    private $username;
+    private $password;
+    private $email;
     private $created_at;
-    private $categoria_id;
-    private $usuario_id;
     private $activo;
 
     public function __construct() {}
@@ -17,25 +16,21 @@ class Comentario
     {
         return $this->id;
     }
-    public function getTitulo()
+    public function getUsername()
     {
-        return $this->titulo;
+        return $this->username;
     }
-    public function getContenido()
+    public function getPassword()
     {
-        return $this->contenido;
+        return $this->password;
     }
     public function getCreatedAt()
     {
         return $this->created_at;
     }
-    public function getCategoriaId()
+    public function getEmail()
     {
-        return $this->categoria_id;
-    }
-    public function getUsuarioId()
-    {
-        return $this->usuario_id;
+        return $this->email;
     }
     public function getActivo()
     {
@@ -47,36 +42,32 @@ class Comentario
     {
         $this->id = $_n;
     }
-    public function setTitulo($_n)
+    public function setUsername($_n)
     {
-        $this->titulo = $_n;
+        $this->username = $_n;
     }
-    public function setContenido($_n)
+    public function setPassword($_n)
     {
-        $this->contenido = $_n;
+        $this->password = $_n;
     }
     public function setCreatedAt($_n)
     {
         $this->created_at = $_n;
     }
-    public function setCategoriaId($_n)
+    public function setEmail($_n)
     {
-        $this->categoria_id = $_n;
-    }
-    public function setUsuarioId($_n)
-    {
-        $this->usuario_id = $_n;
+        $this->email = $_n;
     }
     public function setActivo($_n)
     {
         $this->activo = $_n;
     }
 
-    public function getByEntradaId($_id)
+    public function getByUsernamePassword($_username, $_password)
     {
         $lista = [];
         $con = new Conexion();
-        $query = "SELECT id, entrada_id, texto, created_at, usuario_id, activo FROM foro_comentario WHERE entrada_id = ".$_id.";";
+        $query = "SELECT id, username, password, email, created_at, activo FROM foro_usuario WHERE username = '" . $_username . "' AND password=MD5('" . $_password . "');";
         $rs = mysqli_query($con->getConnection(), $query);
         if ($rs) {
             while ($registro = mysqli_fetch_assoc($rs)) {
@@ -86,7 +77,7 @@ class Comentario
             mysqli_free_result($rs);
         }
         $con->closeConnection();
-        return $lista;
+        return $lista[0];
     }
 
     public function add(Entrada $_nuevo)
