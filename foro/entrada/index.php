@@ -40,9 +40,9 @@ $listaComentarios = getApiData($endpoint2, $token);
                         $usuario_crea = ' | Usuario: [' . $comentario['created']['user']['username'] . ']';
                         if ($_SESSION['user_data']['id'] == $comentario['created']['user']['id']) {
                             $usuario_crea .= ' <button class="btn btn-sm btn-primary" onclick="editarComentario(' . $comentario['id'] . ', ' . $entrada['id'] . ',\'' . $comentario['texto'] . '\')">Editar Comentario</button>';
-                            if($comentario['activo']){
-                                $usuario_crea .= ' <button class="btn btn-sm btn-danger" onclick="eliminarComentario(' . $comentario['id'] . ')">Eliminar Comentario</button>';
-                            }else{
+                            if ($comentario['activo']) {
+                                $usuario_crea .= ' <button class="btn btn-sm btn-danger" onclick="eliminarComentario(' . $comentario['id'] . ', ' . $entrada['id'] . ')">Eliminar Comentario</button>';
+                            } else {
                                 $usuario_crea .= ' <button class="btn btn-sm btn-info" onclick="habilitarComentario(' . $comentario['id'] . ')">Habilitar Comentario</button>';
                             }
                         }
@@ -86,21 +86,81 @@ $listaComentarios = getApiData($endpoint2, $token);
                 form.method = 'POST';
                 form.innerHTML = '<div class="mb-3"><label for="exampleFormControlTextarea1" class="form-label">Editar Comentario</label><input type="hidden" name="id" value="' + _id + '"><input type="hidden" name="entrada_id" value="' + _entrada_id + '"><input type="hidden" name="accion" value="editar"><textarea name="comentario" class="form-control" id="exampleFormControlTextarea1" rows="3">' + _texto + '</textarea></div><button type="submit" class="btn btn-primary">Comentar</button>';
             }
-            function eliminarComentario(_id, _entrada_id) {
-                alert("Eliminar");
-                // const form = document.getElementById('formulario');
-                // form.classList.remove('d-none');
-                // form.action = 'comentar/';
-                // form.method = 'POST';
-                // form.innerHTML = '<div class="mb-3"><label for="exampleFormControlTextarea1" class="form-label">Editar Comentario</label><input type="hidden" name="id" value="' + _id + '"><input type="hidden" name="entrada_id" value="' + _entrada_id + '"><input type="hidden" name="accion" value="editar"><textarea name="comentario" class="form-control" id="exampleFormControlTextarea1" rows="3">' + _texto + '</textarea></div><button type="submit" class="btn btn-primary">Comentar</button>';
+
+            async function eliminarComentario(_id, _entrada_id) {
+                // 1. La URL de la API real
+                const url = `https://udp.coningenio.cl/foro/api/v1/comentario/?id=${_id}`;
+
+                // 2. 🚨 ¡EL TOKEN SECRETO EXPUESTO!
+                // Cualquiera puede ver esto en el "Inspeccionar Elemento" (Pestaña Red o Fuentes).
+                const authToken = 'udp.2025';
+
+                try {
+                    // 3. Configurar fetch con método DELETE y cabeceras
+                    const response = await fetch(url, {
+                        method: 'DELETE',
+                        headers: {
+                            // 4. Aquí se envía el token
+                            'Authorization': `Bearer ${authToken}`
+                        }
+                    });
+
+                    // 5. Manejar la respuesta de la API
+                    // (Un DELETE exitoso a menudo no devuelve contenido, código 204)
+                    if (response.ok) { // Códigos 200-299
+                        alert('Comentario eliminado (mediante JS directo).');
+
+                        // 6. Redirigir como pediste
+                        window.location.href = '../entrada/?id=' + _entrada_id;
+                    } else {
+                        // Si la API devuelve un error (401, 404, 500)
+                        const errorData = await response.json().catch(() => ({})); // Intenta leer el error
+                        alert(`Error de la API: ${response.status} ${response.statusText}. ` + (errorData.error || ''));
+                    }
+
+                } catch (error) {
+                    // Captura errores de red (ej. no hay conexión)
+                    console.error('Error en la función eliminarComentarioDirecto:', error);
+                    alert('Error de conexión. No se pudo completar la solicitud.');
+                }
             }
-            function habilitarComentario(_id, _entrada_id) {
-                alert("Habilitar");
-                // const form = document.getElementById('formulario');
-                // form.classList.remove('d-none');
-                // form.action = 'comentar/';
-                // form.method = 'POST';
-                // form.innerHTML = '<div class="mb-3"><label for="exampleFormControlTextarea1" class="form-label">Editar Comentario</label><input type="hidden" name="id" value="' + _id + '"><input type="hidden" name="entrada_id" value="' + _entrada_id + '"><input type="hidden" name="accion" value="editar"><textarea name="comentario" class="form-control" id="exampleFormControlTextarea1" rows="3">' + _texto + '</textarea></div><button type="submit" class="btn btn-primary">Comentar</button>';
+
+            async function habilitarComentario(_id) {
+                // 1. La URL de la API real
+                const url = `https://udp.coningenio.cl/foro/api/v1/comentario/?id=${_id}`;
+
+                // 2. 🚨 ¡EL TOKEN SECRETO EXPUESTO!
+                // Cualquiera puede ver esto en el "Inspeccionar Elemento" (Pestaña Red o Fuentes).
+                const authToken = 'udp.2025';
+
+                try {
+                    // 3. Configurar fetch con método DELETE y cabeceras
+                    const response = await fetch(url, {
+                        method: 'PATCH',
+                        headers: {
+                            // 4. Aquí se envía el token
+                            'Authorization': `Bearer ${authToken}`
+                        }
+                    });
+
+                    // 5. Manejar la respuesta de la API
+                    // (Un PATCH exitoso a menudo no devuelve contenido, código 204)
+                    if (response.ok) { // Códigos 200-299
+                        alert('Comentario habilitado (mediante JS directo).');
+
+                        // 6. Redirigir como pediste
+                        window.location.href = '../';
+                    } else {
+                        // Si la API devuelve un error (401, 404, 500)
+                        const errorData = await response.json().catch(() => ({})); // Intenta leer el error
+                        alert(`Error de la API: ${response.status} ${response.statusText}. ` + (errorData.error || ''));
+                    }
+
+                } catch (error) {
+                    // Captura errores de red (ej. no hay conexión)
+                    console.error('Error en la función habilitarComentario:', error);
+                    alert('Error de conexión. No se pudo completar la solicitud.');
+                }
             }
         </script>
     </section>

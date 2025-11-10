@@ -110,9 +110,7 @@ switch ($_method) {
                 session_start();
             }
 
-            $body = json_decode(file_get_contents("php://input", true));
-
-            $modelo->setId($body->id);
+            $modelo->setId($_parametroID);
             $respuesta = $modelo->disable($modelo);
 
             if ($respuesta) {
@@ -139,9 +137,7 @@ switch ($_method) {
                 session_start();
             }
 
-            $body = json_decode(file_get_contents("php://input", true));
-
-            $modelo->setId($body->id);
+            $modelo->setId($_parametroID);
             $respuesta = $modelo->enable($modelo);
 
             if ($respuesta) {
