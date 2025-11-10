@@ -18,7 +18,7 @@ switch ($_method) {
                 $existe = $modelo->getByUsernamePassword($body->username, $body->password);
                 if ($existe['activo']) {
                     http_response_code(200);
-                    echo json_encode(['usuario' => $existe]);
+                    echo json_encode($existe);
                     die();
                 } else {
                     http_response_code(404);

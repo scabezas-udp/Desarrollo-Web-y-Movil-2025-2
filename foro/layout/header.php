@@ -26,7 +26,7 @@ if (session_status() === PHP_SESSION_NONE) {
                                 // Muestra el botón de CERRAR SESIÓN
                             ?>
                                 <a href="<?php echo $ruta ?>usuario/logout/" class="btn btn-danger">
-                                    Cerrar Sesión
+                                    <?php echo $_SESSION['user_data']['username'] ?> | Cerrar Sesión
                                 </a>
                             <?php
                             } else {

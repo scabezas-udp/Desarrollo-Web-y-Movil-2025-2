@@ -3,10 +3,9 @@
 class Comentario
 {
     private $id;
-    private $titulo;
-    private $contenido;
+    private $entrada_id;
+    private $texto;
     private $created_at;
-    private $categoria_id;
     private $usuario_id;
     private $activo;
 
@@ -17,21 +16,17 @@ class Comentario
     {
         return $this->id;
     }
-    public function getTitulo()
+    public function getEntradaId()
     {
-        return $this->titulo;
+        return $this->entrada_id;
     }
-    public function getContenido()
+    public function getTexto()
     {
-        return $this->contenido;
+        return $this->texto;
     }
     public function getCreatedAt()
     {
         return $this->created_at;
-    }
-    public function getCategoriaId()
-    {
-        return $this->categoria_id;
     }
     public function getUsuarioId()
     {
@@ -47,21 +42,17 @@ class Comentario
     {
         $this->id = $_n;
     }
-    public function setTitulo($_n)
+    public function setEntradaId($_n)
     {
-        $this->titulo = $_n;
+        $this->entrada_id = $_n;
     }
-    public function setContenido($_n)
+    public function setTexto($_n)
     {
-        $this->contenido = $_n;
+        $this->texto = $_n;
     }
     public function setCreatedAt($_n)
     {
         $this->created_at = $_n;
-    }
-    public function setCategoriaId($_n)
-    {
-        $this->categoria_id = $_n;
     }
     public function setUsuarioId($_n)
     {
@@ -78,7 +69,6 @@ class Comentario
         $con = new Conexion();
         $query = "SELECT fc.id, fc.entrada_id, fc.texto, fc.created_at, fc.usuario_id, fu.username, fc.activo FROM foro_comentario fc JOIN foro_usuario fu ON (fc.usuario_id = fu.id) WHERE fc.entrada_id = " . $_id . ";";
         $rs = mysqli_query($con->getConnection(), $query);
-        echo $query;
         if ($rs) {
             while ($registro = mysqli_fetch_assoc($rs)) {
                 $registro['activo'] = $registro['activo'] == 1 ? true : false;
@@ -88,7 +78,10 @@ class Comentario
                     "texto" => $registro['texto'],
                     "created" => [
                         "date" => $registro['created_at'],
-                        "user" => $registro['usuario_username']
+                        "user" => [
+                            "id" => $registro['usuario_id'],
+                            "username" => $registro['username']
+                        ]
                     ],
                     "activo" => $registro['activo']
                 ];
@@ -100,12 +93,29 @@ class Comentario
         return $lista;
     }
 
-    public function add(Entrada $_nuevo)
+    private function getAll()
     {
-        /*
+        $lista = [];
+        $con = new Conexion();
+        $query = "SELECT * FROM foro_comentario ;";
+        $rs = mysqli_query($con->getConnection(), $query);
+        if ($rs) {
+            while ($registro = mysqli_fetch_assoc($rs)) {
+                $nuevo = $registro['id'];
+                array_push($lista, $nuevo);
+            }
+            mysqli_free_result($rs);
+        }
+        $con->closeConnection();
+        return $lista;
+    }
+
+    public function add(Comentario $_nuevo)
+    {
         $con = new Conexion();
         $nuevoId = count($this->getAll()) + 1;
-        $query = "INSERT INTO indicador (id, codigo, nombre, unidad_medida_id, valor, activo) VALUES (" . $nuevoId . " ,'" . $_nuevo->getCodigo() . "', '" . $_nuevo->getNombre() . "', " . $_nuevo->getUnidadMedidaId() . ", " . $_nuevo->getValor() . ", TRUE)";
+        $query = "INSERT INTO foro_comentario (id, entrada_id, texto, usuario_id, activo) VALUES (" . $nuevoId . " , " . $_nuevo->getEntradaId() . ", '" . $_nuevo->getTexto() . "', " . $_nuevo->getUsuarioId() . ", TRUE)";
+        // echo $query;
         try {
             $rs = mysqli_query($con->getConnection(), $query);
             $con->closeConnection();
@@ -114,6 +124,49 @@ class Comentario
             }
         } catch (\Throwable $th) {
             return false;
-        }*/
+        }
+    }
+    public function update(Comentario $_nuevo)
+    {
+        $con = new Conexion();
+        $query = "UPDATE foro_comentario SET texto = '" . $_nuevo->getTexto() . "' WHERE id = " . $_nuevo->getId();
+        // echo $query;
+        try {
+            $rs = mysqli_query($con->getConnection(), $query);
+            $con->closeConnection();
+            if ($rs) {
+                return true;
+            }
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
+    public function disable(Comentario $_nuevo)
+    {
+        $con = new Conexion();
+        $query = "UPDATE foro_comentario SET activo = false WHERE id = " . $_nuevo->getId();
+        try {
+            $rs = mysqli_query($con->getConnection(), $query);
+            $con->closeConnection();
+            if ($rs) {
+                return true;
+            }
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
+    public function enable(Comentario $_nuevo)
+    {
+        $con = new Conexion();
+        $query = "UPDATE foro_comentario SET activo = true WHERE id = " . $_nuevo->getId();
+        try {
+            $rs = mysqli_query($con->getConnection(), $query);
+            $con->closeConnection();
+            if ($rs) {
+                return true;
+            }
+        } catch (\Throwable $th) {
+            return false;
+        }
     }
 }

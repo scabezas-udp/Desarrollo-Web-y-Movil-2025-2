@@ -24,9 +24,9 @@ $post_data = json_encode([
 $ch = curl_init($api_url);
 
 // 4. Configurar las opciones de cURL para la petición POST
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
-curl_setopt($ch, CURLOPT_POST, true);           
-curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data); 
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
 
 // **¡ACTUALIZACIÓN CRÍTICA AQUÍ!**
 // Se añade la cabecera Authorization: Bearer <token>
@@ -50,28 +50,24 @@ if ($http_code == 200) {
     // **Usuario Válido**
     $user_data = json_decode($response, true);
     $_SESSION['is_logged_in'] = true;
-    $_SESSION['user_data'] = $user_data; 
-    
+    $_SESSION['user_data'] = $user_data;
+
     header('Location: ../../');
     exit();
-    
 } elseif ($http_code == 404) {
     // **Usuario No Válido**
     $error_message = "Credenciales incorrectas. Inténtalo de nuevo.";
     header('Location: login.php?error=' . urlencode($error_message));
     exit();
-
 } elseif ($http_code == 401 || $http_code == 403) {
     // Manejar errores de autorización (401 Unauthorized o 403 Forbidden)
     // Esto suele indicar un token Bearer incorrecto o faltante.
     $error_message = "Error de autorización. No se pudo acceder al servicio de validación.";
     header('Location: login.php?error=' . urlencode($error_message));
     exit();
-    
 } else {
     // Otro error HTTP (ej: 500, 400, etc.)
     $error_message = "Error en la comunicación con el servidor. Código: " . $http_code;
     header('Location: login.php?error=' . urlencode($error_message));
     exit();
 }
-?>
